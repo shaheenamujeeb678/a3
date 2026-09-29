@@ -1,0 +1,207 @@
+{
+  "domain": "debatelearning",
+  "niche": "Collegiate Debate Pedagogy & Forensic Rhetoric",
+  "design_concept": "Neo-Classicist Guild & Roman Columnar",
+  "archetype_id": "neoclassic_guild",
+  "pages": [
+    "index.php",
+    "about.html",
+    "services.html",
+    "contact.html",
+    "faq.html",
+    "privacy-policy.html",
+    "terms-and-conditions.html",
+    "disclaimer.html",
+    "cookie-policy.html"
+  ],
+  "images": [
+    {
+      "index": 1,
+      "filename": "debatelearning_asset_1.jpg",
+      "size_kb": 343.22,
+      "md5": "d727a5f7bb50ec9b938360e213df26bb",
+      "description": "Artisanal Collegiate Debate Pedagogy & Forensic Rhetoric: debatelearning asset 1",
+      "page": "index.php",
+      "section": "Hero Masthead"
+    },
+    {
+      "index": 2,
+      "filename": "debatelearning_asset_2.jpg",
+      "size_kb": 212.59,
+      "md5": "e94f010281ffb34dd797a0c61a381b19",
+      "description": "bailey hall cornell university co",
+      "page": "index.php",
+      "section": "Signature Showcase I"
+    },
+    {
+      "index": 3,
+      "filename": "debatelearning_asset_3.jpg",
+      "size_kb": 84.88,
+      "md5": "6b037234e2f51e06c71c90ec283418f6",
+      "description": "dr. hilla limann technical universi",
+      "page": "index.php",
+      "section": "Signature Showcase II"
+    },
+    {
+      "index": 4,
+      "filename": "debatelearning_asset_4.jpg",
+      "size_kb": 74.79,
+      "md5": "45ef453242499eeb456073d904c8b8c2",
+      "description": "dr. hilla limann technical universi",
+      "page": "index.php",
+      "section": "Signature Showcase III"
+    },
+    {
+      "index": 5,
+      "filename": "debatelearning_asset_5.jpg",
+      "size_kb": 174.61,
+      "md5": "01a02cdf086e87d2c621b7a8fd482901",
+      "description": "grace knox lecture hall university",
+      "page": "index.php",
+      "section": "Curated Collection I"
+    },
+    {
+      "index": 6,
+      "filename": "debatelearning_asset_6.jpg",
+      "size_kb": 132.17,
+      "md5": "f3583420096fa18ac8f19929041050bd",
+      "description": "independence hall at ohio state uni",
+      "page": "index.php",
+      "section": "Curated Collection II"
+    },
+    {
+      "index": 7,
+      "filename": "debatelearning_asset_7.jpg",
+      "size_kb": 160.69,
+      "md5": "2ba698d4458ba5d8ef2ebfa5e305f402",
+      "description": "innopolis university lecture hall",
+      "page": "index.php",
+      "section": "Heritage Story I"
+    },
+    {
+      "index": 8,
+      "filename": "debatelearning_asset_8.jpg",
+      "size_kb": 196.51,
+      "md5": "0ba7c89d201100acd83c14f281935b0d",
+      "description": "large lecture hall at brown univers",
+      "page": "index.php",
+      "section": "Heritage Story II"
+    },
+    {
+      "index": 9,
+      "filename": "debatelearning_asset_9.jpg",
+      "size_kb": 95.0,
+      "md5": "e14d36297a8765d7c7633ddf0e2b12ba",
+      "description": "lecture hall university of limpopo",
+      "page": "about.html",
+      "section": "Heritage Hero"
+    },
+    {
+      "index": 10,
+      "filename": "debatelearning_asset_10.jpg",
+      "size_kb": 214.13,
+      "md5": "746f0d9f26ec59f2f8c6db0bff619f6c",
+      "description": "lecture hall uds",
+      "page": "about.html",
+      "section": "Principles Pillar I"
+    },
+    {
+      "index": 11,
+      "filename": "debatelearning_asset_11.jpg",
+      "size_kb": 193.56,
+      "md5": "d86cf9261d88a029656f86c4f3666e9e",
+      "description": "lecture hall uds 1",
+      "page": "about.html",
+      "section": "Principles Pillar II"
+    },
+    {
+      "index": 12,
+      "filename": "debatelearning_asset_12.jpg",
+      "size_kb": 389.19,
+      "md5": "dfc04ad1b6146084f86162d080e6fa5c",
+      "description": "lecture hall uds 17",
+      "page": "about.html",
+      "section": "Principles Pillar III"
+    },
+    {
+      "index": 13,
+      "filename": "debatelearning_asset_13.jpg",
+      "size_kb": 306.5,
+      "md5": "f6b2db6ebc28de424fe4612b69c9d516",
+      "description": "lecture hall uds 5",
+      "page": "services.html",
+      "section": "Services Hero"
+    },
+    {
+      "index": 14,
+      "filename": "debatelearning_asset_14.jpg",
+      "size_kb": 393.98,
+      "md5": "2bff50f9caa1c83d57495b89c16a0e99",
+      "description": "lecture hall uds 7",
+      "page": "services.html",
+      "section": "Specialty I"
+    },
+    {
+      "index": 15,
+      "filename": "debatelearning_asset_15.jpg",
+      "size_kb": 318.62,
+      "md5": "fac7addcd3a2655c7880189887a0bb9b",
+      "description": "lecture hall uds 8",
+      "page": "services.html",
+      "section": "Specialty II"
+    },
+    {
+      "index": 16,
+      "filename": "debatelearning_asset_16.jpg",
+      "size_kb": 252.46,
+      "md5": "dd94f94bba16ee74e6ce82a8f514ea3e",
+      "description": "lecture hall th325 at brock univers",
+      "page": "services.html",
+      "section": "Specialty III"
+    },
+    {
+      "index": 17,
+      "filename": "debatelearning_asset_17.jpg",
+      "size_kb": 186.64,
+      "md5": "c1f56e2807c7f0293304276e77030af4",
+      "description": "lecture hall 2 henan university of",
+      "page": "services.html",
+      "section": "Specialty IV"
+    },
+    {
+      "index": 18,
+      "filename": "debatelearning_asset_18.jpg",
+      "size_kb": 352.54,
+      "md5": "bdc34898deb8def07b7a11e13bde4f05",
+      "description": "lecture hall complex 4",
+      "page": "services.html",
+      "section": "Specialty V"
+    },
+    {
+      "index": 19,
+      "filename": "debatelearning_asset_19.jpg",
+      "size_kb": 236.45,
+      "md5": "7c119b8be5391b5c00e1b70b25438399",
+      "description": "lecture hall in university",
+      "page": "contact.html",
+      "section": "Salon Consultation"
+    },
+    {
+      "index": 20,
+      "filename": "debatelearning_asset_20.jpg",
+      "size_kb": 253.5,
+      "md5": "67443f996399085b31f6a2837e0816db",
+      "description": "lecture hall in university of ilorin",
+      "page": "faq.html",
+      "section": "Collector FAQ"
+    }
+  ],
+  "seo": {
+    "google_tag": "G-0LY0HY7L01",
+    "address": "181 Mercer Street, New York, NY 10012, United States",
+    "telephone": "+1-888-777-5845",
+    "sitemap": "https://debatelearning.com/sitemap.xml",
+    "robots": "https://debatelearning.com/robots.txt"
+  },
+  "validation_status": "PASSED_100_PERCENT"
+}
